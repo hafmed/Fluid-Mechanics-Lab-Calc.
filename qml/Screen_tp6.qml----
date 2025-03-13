@@ -1,0 +1,224 @@
+import QtQuick
+import QtQuick.Controls
+import QtCore
+import QtQuick.Controls.Material 2.12
+import Qt.labs.qmlmodels 1.0
+import QtCharts
+import QtQuick.Layouts
+
+
+Rectangle {
+    width: app.width
+    height: app.height-rect.height
+    color:"transparent"
+    Material.theme: Material.Dark
+    Material.accent: Material.Purple
+
+    property real a
+
+    function showMessageBox() {
+        return dialogMessageErrorFparser.open()
+    }
+    Connections {
+        target: CalculHaf
+        function onRequestDialog(title,error){
+            dialogMessageErrorFparser.title=title
+            textfirstuseofappdialog_tp.text=error
+            dialogMessageErrorFparser.open()
+
+        }
+        function onRequestXi(x2,i){
+            var x=x2
+
+            tableModelQexp_Diaphra_tp5.appendRow({i:i,xi:x2})
+
+            textcalcul2_tp6.text=x2
+        }
+        // function onRequestDialog() {
+        //     dialogMessageErrorFparser.title=title
+        //     textfirstuseofappdialog_tp.text=error
+        //     dialogMessageErrorFparser.open()
+        //  }
+    }
+    Dialog {
+        id: dialogMessageErrorFparser
+        title: "TP LABO Hydraulique ver "+appVer
+        anchors.centerIn: Overlay.overlay
+        Text {
+            id:textfirstuseofappdialog_tp
+            width: parent.width
+            text: "Hopefully this appl"
+            wrapMode: Text.Wrap
+            font.bold : true
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+        standardButtons: Dialog.Ok
+        onAccepted: {
+            close()
+        }
+    }
+
+    ScrollView {
+        anchors.fill: parent
+        clip: true
+        contentWidth: parent.width
+        contentHeight: column1_tp6.height+50
+        Column {
+            id:column1_tp6
+            width: parent.width
+            anchors.margins: 10
+            spacing: 10
+            Row {
+                width: parent.width
+                spacing: 0
+                ToolSeparator {
+                    height: 25
+                    width: (parent.width-label1_Given_tp6.width)/2
+                    orientation: Qt.Horizontal
+                }
+                Label {
+                    id:label1_Given_tp6
+                    width: label1_Given_tp6.text.width
+                    text: "Given"
+                    anchors.fill: parent.center
+                }
+                ToolSeparator {
+                    height: 25
+                    width: (parent.width-label1_Given_tp6.width)/2
+                    orientation: Qt.Horizontal
+                }
+            }
+
+            Row {
+                width: parent.width-7
+                spacing: 2
+                TextField {
+                    id:textA_tp6
+                    width: parent.width/4
+                    placeholderText: qsTr("A")
+                    text: settings.a_tp6
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    onTextChanged: {if (textA_tp6.text==="nan" || textA_tp6.text==="NaN") textA_tp6.text=0.100 ;
+                        a_tp6=textA_tp6.text}
+                }
+                TextField {
+                    id:textB_tp6
+                    width: parent.width/4
+                    placeholderText: qsTr("B")
+                    text: settings.b_tp6
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    onTextChanged: {if (textB_tp6.text==="nan" || textB_tp6.text==="NaN") textB_tp6.text=0.100 ;
+                        b_tp6=textB_tp6.text}
+                }
+                TextField {
+                    id:textC_tp6
+                    width: parent.width/4
+                    placeholderText: qsTr("C")
+                    text: settings.c_tp6
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    onTextChanged: {if (textC_tp6.text==="nan" || textC_tp6.text==="NaN") textC_tp6.text=0.100 ;
+                        c_tp6=textC_tp6.text}
+                }
+                TextField {
+                    id:textD_tp6
+                    width: parent.width/4
+                    placeholderText: qsTr("D")
+                    text: settings.d_tp6
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    onTextChanged: {if (textD_tp6.text==="nan" || textD_tp6.text==="NaN") textD_tp6.text=0.100 ;
+                        d_tp6=textD_tp6.text}
+                }
+
+
+            }
+
+
+            TextField {
+                id:textcalcul1_tp6
+                width: parent.width
+                placeholderText: qsTr("calcul c++")
+                text: a_tp6+"*1/x"+"+sqrt(x)"/////"a="+CalculHaf.hafresolutioneqtnonlineaire_newtonraphson(a_tp6,b_tp6,c_tp6,d_tp6);
+                ///inputMethodHints: Qt.ImhDigitsOnly
+                onTextChanged: {if (textcalcul1_tp6.text==="nan" || textcalcul1_tp6.text==="NaN") textcalcul1_tp6.text=0.100 ;
+                    var a=textcalcul1_tp6.text}
+            }
+
+            TextField {
+                id:textcalcul2_tp6
+                width: parent.width
+                placeholderText: qsTr("calcul c++")
+
+                ///inputMethodHints: Qt.ImhDigitsOnly
+                onTextChanged: {if (textcalcul1_tp6.text==="nan" || textcalcul1_tp6.text==="NaN") textcalcul1_tp6.text=0.100 ;
+                    var a=textcalcul1_tp6.text}
+            }
+
+            Button {
+                width: parent.width
+                text: "Calculer"
+                onClicked: {
+                    tableModelQexp_Diaphra_tp5.clear()
+                    CalculHaf.hafresolutioneqtnonlineaire_newtonraphson(textcalcul1_tp6.text,b_tp6)
+                }
+            }
+            Rectangle {
+                id:rectabview2_Diaphra_tp5
+                width: parent.width
+                height: 175
+                TableView {
+                    id:tabview2_Diaphra_tp5
+                    anchors.fill: parent
+                    // columnSpacing: 1
+                    // rowSpacing: 1
+                    boundsBehavior: Flickable.StopAtBounds
+                    model: TableModel {
+                        id:tableModelQexp_Diaphra_tp5
+                        TableModelColumn { display: "i" }
+                        TableModelColumn { display: "xi" }
+                                rows: [
+                            {
+                                i: "i",
+                                xi: "x(i)",
+                            }
+                        ]
+                    }
+                    delegate:  TextInput {
+                        id:textItemQexp_Diaphra_tp5
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        inputMethodHints: Qt.ImhDigitsOnly
+                        text: model.display
+                        padding: 9
+                        ///wrapMode: Text.WordWrap
+                        selectByMouse: true
+                        renderType: Text.NativeRendering
+                        onTextEdited: {
+                            model.display = text
+                        }
+                        onAccepted:  {
+                           /// tableModelQexp_Diaphra_tp5.calculQexpMoy_Diaphra_tp5();
+                        }
+                        Rectangle {
+                            anchors.fill: parent
+                            height: textItemQexp_Diaphra_tp5.implicitHeight
+                            width: textItemQexp_Diaphra_tp5.implicitWidth
+                            ///width: parent.width/2
+                            color:"transparent"
+                            z: -1
+                            border.color: "steelblue"
+                        }
+
+                    }
+                }
+            }
+
+
+        }
+    }
+    Component.onCompleted: {
+        tableModelQexp_Diaphra_tp5.clear()
+        // tableModel1_tp5.updatechart1_venturie_tp5();
+        // tableModel1_Diaphra_tp5.updatechart1_Diaphra_tp5();
+    }
+}
